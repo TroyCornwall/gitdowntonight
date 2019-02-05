@@ -2,14 +2,14 @@ namespace gitdowntonight.models
 {
     public class GithubContributerStats
     {
-      public author Author;
-      public long Total;
+      public author Author { get; set; }
+      public long Total { get; set; }
     }
 
     public class author
     {
-      public string Login;
-      public long Id;
+      
+      public string Login { get; set; }
     }
 }
 

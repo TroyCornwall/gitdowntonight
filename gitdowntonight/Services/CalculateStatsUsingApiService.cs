@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using gitdowntonight.models;
+using Serilog;
 
 namespace gitdowntonight.Services
 {
     public class CalculateStatsUsingApiService : ICalcStatsForOrg
     {
         private readonly IGithubApi _githubApi;
+
         //Having this at class level and using DI means this gets initialized when the application starts
         private readonly List<Contributor> _contributors = new List<Contributor>();
 
@@ -19,12 +21,13 @@ namespace gitdowntonight.Services
         public List<Contributor> CalculateStatsForOrg(string org)
         {
             //Firstly we need to get all the repos for the org
-            var repos = _githubApi.GetReposForOrganization(org).Result;
+            var repos = _githubApi.GetReposForOrganization(org);
 
+            Log.Debug($"Got {repos.Count} repos");
             //We then need to get the stats for each of these
             foreach (var repo in repos)
             {
-                var stats = _githubApi.GetStatsForRepo(org, repo.Name).Result;
+                var stats = _githubApi.GetStatsForRepo(org, repo.Name);
                 //Now we have the stats for this repo we need to add them to a total for each user
                 foreach (var contributorStat in stats)
                 {
@@ -32,21 +35,25 @@ namespace gitdowntonight.Services
                     UpdateOrAddContribution(contributorStat);
                 }
             }
+
             return _contributors;
         }
 
         private void UpdateOrAddContribution(GithubContributerStats contribution)
         {
             var githubUsername = contribution.Author.Login;
+            
             //Check if we already have this user in our list of results
-            try
+            var contributor = _contributors.Find(x => x.Name.Equals(githubUsername));
+            if (contributor != null)
             {
-                var contributor = _contributors.Find(x => x.Name.Equals(githubUsername));
+                //Add to their contributions
                 contributor.NumberOfContributions += contribution.Total;
             }
-            catch (ArgumentNullException)
+            else
             {
                 //The user wasn't in the list, so add them
+                Log.Debug($"Adding {githubUsername} to Contributors");
                 _contributors.Add(new Contributor
                 {
                     Name = githubUsername,
@@ -55,9 +62,10 @@ namespace gitdowntonight.Services
             }
         }
     }
-
-    public interface ICalcStatsForOrg
-    {
-        List<Contributor> CalculateStatsForOrg(string org);
-    }
 }
+
+public interface ICalcStatsForOrg
+{
+    List<Contributor> CalculateStatsForOrg(string org);
+}
+

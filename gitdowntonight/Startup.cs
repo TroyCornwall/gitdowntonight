@@ -1,92 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Dapper.FluentMap;
-using MediatR;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using System.Net;
+using Flurl.Http;
+using gitdowntonight.models;
+using gitdowntonight.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
-using Swashbuckle.AspNetCore.Filters;
-using Swashbuckle.AspNetCore.Swagger;
-using Z.AspiringLoyalty.AspiringApi.Middleware;
-using Z.AspiringLoyalty.AspiringApi.Services;
 
-namespace Z.AspiringLoyalty.AspiringApi
+namespace gitdowntonight
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public static ServiceProvider ConfigureServices(IServiceCollection services, string[] args)
         {
-            Configuration = configuration;
-        }
+            services = ConfigureOptions(services, args);
+            ConfigureLogging();
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "Aspiring Loyalty Data API", Version = "v1" });
-                c.IncludeXmlComments(xmlPath);
-            });
-
-            services.AddMediatR();
-
-            services.AddScoped<IAppSettings, AppSettings>();
-            services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
-            services.AddTransient<ICardAssociationDataProvider, CardAssociationDataProvider>();
-            services.AddTransient<IPointsAllocationDataProvider, PointsAllocationDataProvider>();
-
-            FluentMapper.Initialize(config => {
-                config.AddMap(new CardAssociationDapperMap());
-                config.AddMap(new PointsAllocationDapperMap());
-            });
+            services.AddTransient<IGithubApi, GithubApiService>();
+            services.AddTransient<ICalcStatsForOrg, CalculateStatsUsingApiService>();
+            services.AddTransient<ISortContributors, ContributorSortingService>();
+            services.AddTransient<IHandleResults, ResultPrintingService>();
+            
+            return services.BuildServiceProvider();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        private static IServiceCollection ConfigureOptions(IServiceCollection services, string[] args)
         {
-            app.UseMiddleware<ExceptionMiddleware>();
-
-            ConfigureLogging(app, env);
-
-            if (env.IsDevelopment())
-            {
-                //app.UseDeveloperExceptionPage();
-
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Aspiring Loyalty Data API v1.0");
-                });
-            }
-            else
-            {
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            //This means we first load from appsettings.json 
+            //Then override with env vars if they exist
+            //Then override with command line args if they exist
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddEnvironmentVariables()
+                .AddCommandLine(args);
+            
+            var config = configBuilder.Build();
+            services.Configure<MyOptions>(config);
+            return services;
         }
 
-        public void ConfigureLogging(IApplicationBuilder app, IHostingEnvironment env)
+        private static void ConfigureLogging()
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -96,4 +53,5 @@ namespace Z.AspiringLoyalty.AspiringApi
                 .CreateLogger();
         }
     }
+    
 }
