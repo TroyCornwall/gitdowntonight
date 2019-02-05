@@ -34,9 +34,12 @@ namespace gitdowntonight.Services
                 request.AddHeader("Accept", "application/vnd.github.v3+json");
                 request.AddHeader("Authorization", $"Bearer {_options.GhAccessToken}");
                 var result = client.Get<List<GithubContributerStats>>(request).Data;
-                if (result.Count == 0)
+         
+                //For some reason, the first time you query a repo, it returns a 202 with no content !?!?
+                //The parser manges to mungle that into an empty object
+                if (result[0].Author == null)
                 {
-                    GetStatsForRepo(org, repo);
+                    return GetStatsForRepo(org, repo);
                 }
                 return result;
             }
