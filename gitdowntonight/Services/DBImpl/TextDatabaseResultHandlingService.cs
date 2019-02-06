@@ -38,10 +38,11 @@ namespace gitdowntonight.Services.DBImpl
             //checks if txt file exist
             if (!File.Exists(filePath))
             {
-                _log.Debug("Creating database file");
-                //create if not
-                var file = File.Create(filePath);
-                file.Close();
+                _log.Debug("File doesn't exist");
+                //Skip straight to writing the file
+                WriteResults(contributions, filePath);
+                //Skip everything else
+                return;
             }
 
             var records = ReadCSV(filePath);
