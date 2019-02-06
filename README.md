@@ -2,6 +2,11 @@
 #### Find out who has contributed the most to a Github Organization
 A Technical Test for a Senior Software Engineer role at JRNY.ai
 
+## Requirements
+This project requires you to have DotNetCore 2.2 SDK installed.
+
+I used build 2.2.103 from https://dotnet.microsoft.com/download/dotnet-core/2.2
+
 ## Github v3 API vs Github GraphQL API
 I spent a bit of time playing with the GraphQL explorer and looking at the documentation, 
 however, it didn't seem to offer the number of contributions a collaborator had done, or give the raw commits to calculate that myself.
