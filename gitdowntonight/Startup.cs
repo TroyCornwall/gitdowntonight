@@ -17,12 +17,8 @@ namespace gitdowntonight
             var options = ConfigureOptions(services, args);
             ConfigureLogging();
 
-
-            if (options.GetValue<String>("AspnetcoreEnvironment").Equals("Development"))
-            {
-                //Disable cert validation - For debugging 
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-            }
+            //TODO: REMOVE THIS
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
 
             //Setup DI

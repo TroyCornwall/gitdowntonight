@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using gitdowntonight.models;
 using Microsoft.Extensions.Options;
@@ -22,8 +23,8 @@ namespace gitdowntonight.Services
         {
             //I ran this over the Github Org, and it had 700 contributors. 
             //So I added a setting, so you can control how many you return
-            var limit = contributions.Count;
-            if (_options.ResultLimit > 0)
+            var limit =  contributions.Count;
+            if (contributions.Count > _options.ResultLimit && _options.ResultLimit > 0)
             {
                 limit = _options.ResultLimit;
             }
