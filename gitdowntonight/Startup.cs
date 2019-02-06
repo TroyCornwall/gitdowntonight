@@ -74,7 +74,7 @@ namespace gitdowntonight
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 //This can be noisy - Turns off debugging logs for CalculateStatsUsingApiService
-                .MinimumLevel.Override("gitdowntonight.Services.CalculateStatsUsingApiService", LogEventLevel.Information)
+                .MinimumLevel.Override("gitdowntonight.Services.Impl.CalculateStatsUsingApiService", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 
                 .WriteTo.Console(LogEventLevel.Debug)
