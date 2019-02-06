@@ -21,24 +21,34 @@ namespace gitdowntonight
             var options = ConfigureOptions(services, args);
             ConfigureLogging();
 
-            //TODO: REMOVE THIS
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-
-
             //Setup DI
             services.AddTransient<IGithubApi, GithubApiService>();
             services.AddTransient<ICalcStatsForOrg, CalculateStatsUsingApiService>();
             services.AddTransient<ISortContributors, ContributorSortingService>();
-            
-//            services.AddTransient<IHandleResults, ResultPrintingService>();
-            services.AddTransient<IHandleResults, TextDatabaseResultHandlingService>();
-            
-            
-            //If you want to run the MVP version, uncomment the following line, and comment the one after
-            //services.AddTransient<IMonitorOrganizationStats, RunOnceStatsForOrganizationService>();
-            services.AddTransient<IMonitorOrganizationStats, PollingStatsForOrganizationService>();
+
+//            setupMvp(services);
+//            setupPolling(services);
+            setupPollingAndFileDB(services);
 
             return services.BuildServiceProvider();
+        }
+
+        private static void setupMvp(IServiceCollection services)
+        {
+            services.AddTransient<IHandleResults, ResultPrintingService>();
+            services.AddTransient<IMonitorOrganizationStats, RunOnceStatsForOrganizationService>();
+        }
+
+        private static void setupPolling(IServiceCollection services)
+        {
+            services.AddTransient<IHandleResults, ResultPrintingService>();
+            services.AddTransient<IMonitorOrganizationStats, PollingStatsForOrganizationService>();
+        }
+        
+        private static void setupPollingAndFileDB(IServiceCollection services)
+        {
+            services.AddTransient<IHandleResults, TextDatabaseResultHandlingService>();
+            services.AddTransient<IMonitorOrganizationStats, PollingStatsForOrganizationService>();
         }
 
         private static IConfigurationRoot ConfigureOptions(IServiceCollection services, string[] args)
