@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using gitdowntonight.models;
 using gitdowntonight.Services;
 using gitdowntonight.Services.DBImpl;
+using gitdowntonight.Services.Impl;
+using gitdowntonight.Services.Interfaces;
 using gitdowntonight.Services.MVPImpl;
+using gitdowntonight.Services.PollingImpl;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;

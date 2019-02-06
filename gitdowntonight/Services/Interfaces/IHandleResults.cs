@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using gitdowntonight.models;
+using gitdowntonight.Models;
 
-namespace gitdowntonight.Services
+namespace gitdowntonight.Services.Interfaces
 {
     public interface IHandleResults
     {

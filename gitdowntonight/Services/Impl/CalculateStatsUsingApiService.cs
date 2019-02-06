@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
-using gitdowntonight.models;
+using gitdowntonight.Models;
+using gitdowntonight.Services.Interfaces;
 using Serilog;
 
-namespace gitdowntonight.Services
+namespace gitdowntonight.Services.Impl
 {
     public class CalculateStatsUsingApiService : ICalcStatsForOrg
     {

@@ -1,7 +1,7 @@
 using System;
 using CsvHelper.Configuration.Attributes;
 
-namespace gitdowntonight.models
+namespace gitdowntonight.Models
 {
     public class Contribution : IEquatable<Contribution>
     {

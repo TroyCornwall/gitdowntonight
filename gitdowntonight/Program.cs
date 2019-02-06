@@ -1,6 +1,6 @@
 ﻿using System;
-using gitdowntonight.models;
 using gitdowntonight.Services;
+using gitdowntonight.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

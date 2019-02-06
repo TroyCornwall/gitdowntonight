@@ -1,4 +1,4 @@
-namespace gitdowntonight
+namespace gitdowntonight.Models
 {
     public enum ExitCodes
     {

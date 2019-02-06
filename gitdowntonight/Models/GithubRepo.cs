@@ -1,7 +1,4 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
-namespace gitdowntonight.models
+namespace gitdowntonight.Models
 {
     public class GithubRepo
     {

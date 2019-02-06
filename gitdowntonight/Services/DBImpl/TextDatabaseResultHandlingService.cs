@@ -6,7 +6,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using CsvHelper;
 using gitdowntonight.Exceptions;
-using gitdowntonight.models;
+using gitdowntonight.Models;
+using gitdowntonight.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Serilog;
 

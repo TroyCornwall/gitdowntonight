@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using gitdowntonight.models;
+using gitdowntonight.Models;
+using gitdowntonight.Services.Interfaces;
 
-namespace gitdowntonight.Services
+namespace gitdowntonight.Services.Impl
 {
     public class ContributorSortingService: ISortContributors
     {

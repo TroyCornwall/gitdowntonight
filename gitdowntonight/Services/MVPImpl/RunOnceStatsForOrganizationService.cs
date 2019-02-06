@@ -1,6 +1,6 @@
 using System;
-using gitdowntonight.models;
 using gitdowntonight.Services;
+using gitdowntonight.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Serilog;
 

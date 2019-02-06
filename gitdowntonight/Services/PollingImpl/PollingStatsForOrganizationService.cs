@@ -1,12 +1,12 @@
 using System;
 using System.Threading;
 using gitdowntonight.Exceptions;
-using gitdowntonight.models;
-using gitdowntonight.Services;
+using gitdowntonight.Models;
+using gitdowntonight.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace gitdowntonight
+namespace gitdowntonight.Services.PollingImpl
 {
     public class  PollingStatsForOrganizationService : IMonitorOrganizationStats
     {

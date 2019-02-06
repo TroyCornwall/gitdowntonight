@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using gitdowntonight.Exceptions;
-using gitdowntonight.models;
+using gitdowntonight.Models;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using Serilog;
 
-namespace gitdowntonight.Services
+namespace gitdowntonight.Services.Impl
 {
     public class GithubApiService : IGithubApi
     {

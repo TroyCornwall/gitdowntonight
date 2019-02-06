@@ -1,7 +1,10 @@
 using System.Collections.Generic;
-using gitdowntonight.models;
+using gitdowntonight.Models;
 
-public interface ICalcStatsForOrg
+namespace gitdowntonight.Services.Interfaces
 {
-    List<Contribution> CalculateStatsForOrg(string org);
+    public interface ICalcStatsForOrg
+    {
+        List<Contribution> CalculateStatsForOrg(string org);
+    }
 }

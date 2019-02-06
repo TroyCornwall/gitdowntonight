@@ -1,4 +1,4 @@
-namespace gitdowntonight.models
+namespace gitdowntonight
 {
     public class MyOptions
     {
