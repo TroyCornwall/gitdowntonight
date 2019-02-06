@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace gitdowntonight.models
+namespace gitdowntonight.Exceptions
 {
     public class GithubApiException : Exception
     {

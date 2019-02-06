@@ -1,4 +1,5 @@
 using System;
+using gitdowntonight.Exceptions;
 using gitdowntonight.models;
 using gitdowntonight.Services;
 using Microsoft.Extensions.Options;
@@ -45,7 +46,8 @@ namespace gitdowntonight
                     //We cannot recover
                     running = false;
                     Log.Error($"Could not recover from exception {e.Message}");
-                    Environment.ExitCode = -1;
+                    //Using Enum values for consistency, and less magic numbers. 
+                    Environment.ExitCode = (int)ExitCodes.UnauthorizedToken;
                 }
                 catch (Exception e)
                 {

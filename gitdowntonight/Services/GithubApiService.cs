@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using gitdowntonight.Exceptions;
 using gitdowntonight.models;
 using Microsoft.Extensions.Options;
 using RestSharp;

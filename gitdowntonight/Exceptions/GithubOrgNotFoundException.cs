@@ -1,7 +1,8 @@
 using System;
 using System.Runtime.Serialization;
+using gitdowntonight.models;
 
-namespace gitdowntonight.models
+namespace gitdowntonight.Exceptions
 {
     public class GithubOrgNotFoundException : GithubApiException
     {
