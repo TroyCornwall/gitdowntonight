@@ -4,11 +4,13 @@ using gitdowntonight.models;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace gitdowntonight.Services
+namespace gitdowntonight.Services.MVPImpl
 {
     public class ResultPrintingService : IHandleResults
     {
         private MyOptions _options;
+        private readonly ILogger _log = Log.ForContext<ResultPrintingService>();
+        
         public ResultPrintingService(IOptionsMonitor<MyOptions> options)
         {
             _options = options.CurrentValue;
@@ -32,7 +34,7 @@ namespace gitdowntonight.Services
             {
                 var name = contributions[i].Name;
                 var numberOfContributions = contributions[i].NumberOfContributions;
-                Log.Information("{0}: {1}: {2} contributions", ++i, name, numberOfContributions);
+                _log.Information("{0}: {1}: {2} contributions", ++i, name, numberOfContributions);
             }
         }
     }

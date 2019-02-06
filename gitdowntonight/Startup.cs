@@ -3,6 +3,8 @@ using System.IO;
 using System.Net;
 using gitdowntonight.models;
 using gitdowntonight.Services;
+using gitdowntonight.Services.DBImpl;
+using gitdowntonight.Services.MVPImpl;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -25,8 +27,14 @@ namespace gitdowntonight
             services.AddTransient<IGithubApi, GithubApiService>();
             services.AddTransient<ICalcStatsForOrg, CalculateStatsUsingApiService>();
             services.AddTransient<ISortContributors, ContributorSortingService>();
-            services.AddTransient<IHandleResults, ResultPrintingService>();
-            services.AddTransient<IMonitorOrganizationStats, RunOnceStatsForOrganizationService>();
+            
+//            services.AddTransient<IHandleResults, ResultPrintingService>();
+            services.AddTransient<IHandleResults, TextDatabaseResultHandlingService>();
+            
+            
+            //If you want to run the MVP version, uncomment the following line, and comment the one after
+            //services.AddTransient<IMonitorOrganizationStats, RunOnceStatsForOrganizationService>();
+            services.AddTransient<IMonitorOrganizationStats, PollingStatsForOrganizationService>();
 
             return services.BuildServiceProvider();
         }
@@ -53,8 +61,11 @@ namespace gitdowntonight
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                //This can be noisy - Turns off debugging logs for CalculateStatsUsingApiService
+                .MinimumLevel.Override("gitdowntonight.Services.CalculateStatsUsingApiService", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.Console(LogEventLevel.Information)
+                
+                .WriteTo.Console(LogEventLevel.Debug)
                 .CreateLogger();
         }
     }

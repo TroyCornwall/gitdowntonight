@@ -4,7 +4,7 @@ using gitdowntonight.Services;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace gitdowntonight
+namespace gitdowntonight.Services.MVPImpl
 {
     public class RunOnceStatsForOrganizationService : IMonitorOrganizationStats
     {
@@ -12,6 +12,7 @@ namespace gitdowntonight
         private readonly ISortContributors _sortContributorsService;
         private readonly IHandleResults _handleResultService;
         private readonly MyOptions _options;
+        private readonly ILogger _log = Log.ForContext<RunOnceStatsForOrganizationService>();
 
         public RunOnceStatsForOrganizationService(ICalcStatsForOrg calcStatsService,
             ISortContributors sortContributorsService, IHandleResults handleResultService,
@@ -39,7 +40,7 @@ namespace gitdowntonight
             }
             catch (Exception e)
             {
-                Log.Error($"We hit an exception, shutting down\n{e.Message}");
+                _log.Error($"We hit an exception, shutting down\n{e.Message}");
                 Environment.Exit(-1);
             }
         }

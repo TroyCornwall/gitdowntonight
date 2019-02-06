@@ -12,6 +12,7 @@ namespace gitdowntonight.Services
     public class GithubApiService : IGithubApi
     {
         private MyOptions _options;
+        private readonly ILogger _log = Log.ForContext<GithubApiService>();
 
         public GithubApiService(IOptionsMonitor<MyOptions> options)
         {
@@ -29,7 +30,7 @@ namespace gitdowntonight.Services
         /// <exception cref="GithubApiException">Handles other errors from the API</exception>
         public List<GithubContributerStats> GetStatsForRepo(string org, string repo)
         {
-            Log.Debug($"Getting stats for {repo}");
+            _log.Debug($"Getting stats for {repo}");
             // GET /repos/:owner/:repo/stats/contributors
 
             var url = $"{_options.GithubBaseUrl}/repos/{org.ToLower()}/{repo.ToLower()}/stats/contributors";
@@ -51,7 +52,7 @@ namespace gitdowntonight.Services
             // This seems recoverable - next time this runs, we should be fine
             if (result.StatusCode == HttpStatusCode.NotFound)
             {
-                Log.Error($"Could not find repo {repo} in organization {org}");
+                _log.Error($"Could not find repo {repo} in organization {org}");
                 throw new GithubRepoNotFoundException($"Could not find repo {repo} in organization {org}");
             }
 
@@ -60,7 +61,7 @@ namespace gitdowntonight.Services
             // while we are running. This isn't recoverable, we need a new token.
             if (result.StatusCode == HttpStatusCode.Unauthorized)
             {
-                Log.Error("Github says our token dead");
+                _log.Error("Github says our token dead");
                 throw new GithubUnauthorizedException("Github says our token dead");
             }
 
@@ -69,8 +70,8 @@ namespace gitdowntonight.Services
             //These should be recoverable 
             if (!result.IsSuccessful)
             {
-                Log.Error($"Status Code {result.StatusCode}, for {org}/{repo}");
-                throw new GithubApiException(
+                _log.Error($"Status Code {result.StatusCode}, for {org}/{repo}");
+                throw new GithubUnknownException(
                     $"{result.StatusCode}: We hit an error querying the repo {repo} for organization {org}");
             }
 
@@ -88,7 +89,7 @@ namespace gitdowntonight.Services
         /// <exception cref="GithubApiException">Handles other errors from the API</exception>
         public List<GithubRepo> GetReposForOrganization(string org)
         {
-            Log.Debug("Querying repos");
+            _log.Debug("Querying repos");
 
             var url = $"{_options.GithubBaseUrl}/orgs/{org.ToLower()}/repos";
             var client = CreateRestClient(url);
@@ -100,7 +101,7 @@ namespace gitdowntonight.Services
             // This seems recoverable - next time this runs, we should be fine
             if (result.StatusCode == HttpStatusCode.NotFound)
             {
-                Log.Error($"Could not find organization {org}");
+                _log.Error($"Could not find organization {org}");
                 throw new GithubOrgNotFoundException($"Could not find organization {org}");
             }
 
@@ -109,7 +110,7 @@ namespace gitdowntonight.Services
             // This isn't recoverable, we need a new token.
             if (result.StatusCode == HttpStatusCode.Unauthorized)
             {
-                Log.Error("Github says our token dead");
+                _log.Error("Github says our token dead");
                 throw new GithubUnauthorizedException("Github says our token dead");
             }
 
@@ -118,8 +119,8 @@ namespace gitdowntonight.Services
             //These should be recoverable 
             if (!result.IsSuccessful)
             {
-                Log.Error($"Status Code {result.StatusCode}, for {org}");
-                throw new GithubApiException(
+                _log.Error($"Status Code {result.StatusCode}, for {org}");
+                throw new GithubUnknownException(
                     $"{result.StatusCode}: We hit an error querying for organization {org}");
             }
 

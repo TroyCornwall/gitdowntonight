@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using gitdowntonight.Exceptions;
 using gitdowntonight.models;
 using gitdowntonight.Services;
@@ -13,6 +14,7 @@ namespace gitdowntonight
         private readonly ISortContributors _sortContributorsService;
         private readonly IHandleResults _handleResultService;
         private readonly MyOptions _options;
+        private readonly ILogger _log = Log.ForContext<PollingStatsForOrganizationService>();
 
         public PollingStatsForOrganizationService(ICalcStatsForOrg calcStatsService,
             ISortContributors sortContributorsService, IHandleResults handleResultService,
@@ -25,7 +27,8 @@ namespace gitdowntonight
         }
 
         /// <summary>
-        ///  This handles our MVP solution.
+        ///  This handles our Polling & Storage solution.
+        ///  To switch between either checkout Startup.cs
         /// </summary>
         public void Run()
         {
@@ -43,17 +46,44 @@ namespace gitdowntonight
                 }
                 catch (GithubUnauthorizedException e)
                 {
-                    //We cannot recover
+                    //Token is invalid/missing/revoked
+                    //We cannot recover from this
                     running = false;
-                    Log.Error($"Could not recover from exception {e.Message}");
+                    _log.Error($"{e.Message}\nCould not recover from exception");
                     //Using Enum values for consistency, and less magic numbers. 
-                    Environment.ExitCode = (int)ExitCodes.UnauthorizedToken;
+                    Environment.ExitCode = (int) ExitCodes.UnauthorizedToken;
                 }
+                catch (GithubOrgNotFoundException e)
+                {
+                    //Could not organization
+                    //We cannot recover from this
+                    running = false;
+                    _log.Error($"{e.Message}\nCould not recover from exception");
+                    Environment.ExitCode = (int) ExitCodes.OrganizationNotFound;
+                }
+                catch(GithubRepoNotFoundException e)
+                {
+                    //Could not find a repo
+                    //We can recover from this when we get a list of repos next time we run
+                    _log.Debug(e.Message);
+                    continue;
+                }
+                catch(GithubUnknownException e)
+                {
+                    //Unknown github issue, this could be due to polling too quickly
+                    //We should be able to recover from this, but it will mess with the results of the this 
+                    _log.Debug(e.Message);
+                    continue;
+                }               
                 catch (Exception e)
                 {
-                    Log.Error($"We hit an exception, shutting down\n{e.Message}");
-                    Environment.Exit(-1);
+                    _log.Error($"We hit an exception, shutting down\n{e.Message}");
+                    Environment.Exit((int)ExitCodes.UnknownError);
                 }
+                
+                //Sleep until we are meant to run again
+                var millisecondsToSleep = _options.SleepPeriod * 1000;
+                Thread.Sleep(millisecondsToSleep);
             }
             
         }
