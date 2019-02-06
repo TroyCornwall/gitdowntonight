@@ -2,7 +2,7 @@
 #### Find out who has contributed the most to a Github Organization
 A Technical Test for a Senior Software Engineer role at JRNY.ai
 
-##Github v3 API vs Github GraphQL API
+## Github v3 API vs Github GraphQL API
 I spent a bit of time playing with the GraphQL explorer and looking at the documentation, 
 however, it didn't seem to offer the number of contributions a collaborator had done, or give the raw commits to calculate that myself.
 
@@ -62,7 +62,7 @@ The last way to pass in the config is by CLI Arguments
  
  `dotnet run --Organization IBM`
  
- ##Switching between MVP/Polling/TextFileDatabase
+ ## Switching between MVP/Polling/TextFileDatabase
  Using DependencyInjection, you are able to swap between the 3 stages of the TechnicalTest
  
  In `Startup.cs` you will see the following lines:
