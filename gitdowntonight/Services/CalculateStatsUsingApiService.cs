@@ -10,15 +10,19 @@ namespace gitdowntonight.Services
         private readonly IGithubApi _githubApi;
 
         //Having this at class level and using DI means this gets initialized when the application starts
-        private readonly List<Contributor> _contributors = new List<Contributor>();
+        private readonly List<Contribution> _contributors = new List<Contribution>();
 
         public CalculateStatsUsingApiService(IGithubApi githubApi)
         {
             _githubApi = githubApi;
         }
 
-
-        public List<Contributor> CalculateStatsForOrg(string org)
+        /// <summary>
+        /// Calculate contributor stats for a Github organization
+        /// </summary>
+        /// <param name="org"> The Organization you want stats for </param>
+        /// <returns> List of contributors, and how many contributions they made </returns>
+        public List<Contribution> CalculateStatsForOrg(string org)
         {
             //Firstly we need to get all the repos for the org
             var repos = _githubApi.GetReposForOrganization(org);
@@ -42,7 +46,7 @@ namespace gitdowntonight.Services
         private void UpdateOrAddContribution(GithubContributerStats contribution)
         {
             var githubUsername = contribution.Author.Login;
-            
+
             //Check if we already have this user in our list of results
             var contributor = _contributors.Find(x => x.Name.Equals(githubUsername));
             if (contributor != null)
@@ -54,7 +58,7 @@ namespace gitdowntonight.Services
             {
                 //The user wasn't in the list, so add them
                 Log.Debug($"Adding {githubUsername} to Contributors");
-                _contributors.Add(new Contributor
+                _contributors.Add(new Contribution
                 {
                     Name = githubUsername,
                     NumberOfContributions = contribution.Total
@@ -63,9 +67,3 @@ namespace gitdowntonight.Services
         }
     }
 }
-
-public interface ICalcStatsForOrg
-{
-    List<Contributor> CalculateStatsForOrg(string org);
-}
-

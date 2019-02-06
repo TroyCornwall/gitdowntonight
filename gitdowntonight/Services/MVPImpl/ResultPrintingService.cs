@@ -13,26 +13,26 @@ namespace gitdowntonight.Services
             _options = options.CurrentValue;
         }
 
-        public void Handle(List<Contributor> contributors)
+        /// <summary>
+        /// Prints out the results to serilog
+        /// What Serilog does with this can be configured in <see cref="Startup"/>
+        /// </summary>
+        /// <param name="contributions"> The list of Contributions</param>
+        public void Handle(List<Contribution> contributions)
         {
             //I ran this over the Github Org, and it had 700 contributors. 
             //So I added a setting, so you can control how many you return
-            var limit = contributors.Count;
+            var limit = contributions.Count;
             if (_options.ResultLimit > 0)
             {
                 limit = _options.ResultLimit;
             }
             for (var i = 0; i < limit;)
             {
-                var name = contributors[i].Name;
-                var numberOfContributions = contributors[i].NumberOfContributions;
+                var name = contributions[i].Name;
+                var numberOfContributions = contributions[i].NumberOfContributions;
                 Log.Information("{0}: {1}: {2} contributions", ++i, name, numberOfContributions);
             }
         }
-    }
-
-    public interface IHandleResults
-    {
-        void Handle(List<Contributor> contributors);
     }
 }

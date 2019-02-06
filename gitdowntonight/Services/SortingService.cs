@@ -6,15 +6,14 @@ namespace gitdowntonight.Services
 {
     public class ContributorSortingService: ISortContributors
     {
-        public List<Contributor> Sort(List<Contributor> contributors)
+        /// <summary>
+        /// Sorts a list of contributions in a descending list of how many contributions they made
+        /// </summary>
+        /// <param name="contributions">The list to sort</param>
+        /// <returns>The sorted list</returns>
+        public List<Contribution> Sort(List<Contribution> contributions)
         {
-            return contributors.OrderByDescending(x => x.NumberOfContributions).ToList();
+            return contributions.OrderByDescending(x => x.NumberOfContributions).ToList();
         }
     }
-
-    public interface ISortContributors
-    {
-        List<Contributor> Sort(List<Contributor> contributors);
-    }
-
 }

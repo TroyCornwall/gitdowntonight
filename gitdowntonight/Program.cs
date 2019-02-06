@@ -14,21 +14,9 @@ namespace gitdowntonight
             //setup our DI
             var serviceProvider = Startup.ConfigureServices(new ServiceCollection(), args);
             
-            //Get our options which include the organisation and access token
-            //These are set either by appsettings.json, env vars, or command line flags
-            var options = serviceProvider.GetService<IOptionsMonitor<MyOptions>>().CurrentValue;
-           
-           //Get all our services
-            var statCalculator = serviceProvider.GetService<ICalcStatsForOrg>();
-            var sorter = serviceProvider.GetService <ISortContributors>();
-            var resultHandler = serviceProvider.GetService<IHandleResults>();
-            
-
-           
-            var contributors = statCalculator.CalculateStatsForOrg(options.Organization);
-            contributors = sorter.Sort(contributors);
-            resultHandler.Handle(contributors);
-
+            //Get our main service
+            var monitorOrganizationStats = serviceProvider.GetService<IMonitorOrganizationStats>();
+            monitorOrganizationStats.Run();
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
-using Flurl.Http;
 using gitdowntonight.models;
 using gitdowntonight.Services;
 using Microsoft.Extensions.Configuration;
@@ -14,20 +14,28 @@ namespace gitdowntonight
     {
         public static ServiceProvider ConfigureServices(IServiceCollection services, string[] args)
         {
-            services = ConfigureOptions(services, args);
+            var options = ConfigureOptions(services, args);
             ConfigureLogging();
 
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-            
+
+            if (options.GetValue<String>("AspnetcoreEnvironment").Equals("Development"))
+            {
+                //Disable cert validation - For debugging 
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            }
+
+
+            //Setup DI
             services.AddTransient<IGithubApi, GithubApiService>();
             services.AddTransient<ICalcStatsForOrg, CalculateStatsUsingApiService>();
             services.AddTransient<ISortContributors, ContributorSortingService>();
             services.AddTransient<IHandleResults, ResultPrintingService>();
-            
+            services.AddTransient<IMonitorOrganizationStats, RunOnceStatsForOrganizationService>();
+
             return services.BuildServiceProvider();
         }
 
-        private static IServiceCollection ConfigureOptions(IServiceCollection services, string[] args)
+        private static IConfigurationRoot ConfigureOptions(IServiceCollection services, string[] args)
         {
             //This means we first load from appsettings.json 
             //Then override with env vars if they exist
@@ -37,10 +45,11 @@ namespace gitdowntonight
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args);
-            
+
             var config = configBuilder.Build();
+            //Bind to object, add to DI
             services.Configure<MyOptions>(config);
-            return services;
+            return config;
         }
 
         private static void ConfigureLogging()
@@ -53,5 +62,4 @@ namespace gitdowntonight
                 .CreateLogger();
         }
     }
-    
 }
